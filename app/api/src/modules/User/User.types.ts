@@ -11,6 +11,6 @@ export type User = Document &
     email: string;
     password: string;
     name: string;
-    phone: string;
+    phoneNumber: string;
     role: "user" | "seller" | "admin";
   };

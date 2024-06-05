@@ -9,7 +9,7 @@ passport.use("local", localStrategy);
 passport.use("jwt", jwtStrategy);
 
 export interface AuthRequest extends Request {
-  user?: User;
+  user?: any;
 }
 
 const passportHandler = (strategy: string) => {

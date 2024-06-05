@@ -1,19 +1,13 @@
 import { Schema, model, Document } from "mongoose";
+import { Message } from "./Message.types";
 
-export interface IMessage extends Document {
-  sender: Schema.Types.ObjectId;
-  receiver: Schema.Types.ObjectId;
-  productId: Schema.Types.ObjectId;
-  content: string;
-  read: boolean;
-}
-
-const MessageSchema = new Schema<IMessage>({
+const MessageSchema = new Schema<Message>({
   sender: { type: Schema.Types.ObjectId, ref: "User", required: true },
   receiver: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+  productId: { type: Schema.Types.ObjectId, ref: "Product", required: false },
   content: { type: String, required: true },
   read: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
 });
 
-export default model<IMessage>("Message", MessageSchema);
+export default model<Message>("Message", MessageSchema);

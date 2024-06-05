@@ -1,21 +1,39 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../../middleware/auth/authMiddleware";
 import CartModel from "./Cart.model";
+import ProductModel from "../Product/Product.model";
 import NotFoundError from "../../middleware/error/NotFoundError";
-import { ICart, ICartItem } from "./Cart.types";
+import { Cart, CartItem } from "./Cart.types";
+import Order from "../Order/Order.model";
 
 const addToCart = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user } = req as AuthRequest;
     const { productId, quantity } = req.body;
 
-    const cart = (await CartModel.findOne({ userId: user!._id })) as ICart;
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      throw new NotFoundError("Product not found");
+    }
+
+    if (quantity > product.stock) {
+      res.status(400).json({ message: `Only ${product.stock} items in stock` });
+      return;
+    }
+
+    const cart = (await CartModel.findOne({ userId: user!._id })) as Cart;
 
     if (cart) {
       const itemIndex = cart.items.findIndex(
-        (item: ICartItem) => item.productId.toString() === productId
+        (item: CartItem) => item.productId.toString() === productId
       );
       if (itemIndex > -1) {
+        if (cart.items[itemIndex].quantity + quantity > product.stock) {
+          res
+            .status(400)
+            .json({ message: `Only ${product.stock} items in stock` });
+          return;
+        }
         cart.items[itemIndex].quantity += quantity;
       } else {
         cart.items.push({ productId, quantity });
@@ -41,7 +59,7 @@ const getCart = async (req: Request, res: Response, next: NextFunction) => {
 
     const cart = (await CartModel.findOne({ userId: user!._id }).populate(
       "items.productId"
-    )) as ICart;
+    )) as Cart;
     if (!cart) {
       throw new NotFoundError("Cart not found");
     }
@@ -60,10 +78,10 @@ const removeFromCart = async (
     const { user } = req as AuthRequest;
     const { productId } = req.params;
 
-    const cart = (await CartModel.findOne({ userId: user!._id })) as ICart;
+    const cart = (await CartModel.findOne({ userId: user!._id })) as Cart;
     if (cart) {
       cart.items = cart.items.filter(
-        (item: ICartItem) => item.productId.toString() !== productId
+        (item: CartItem) => item.productId.toString() !== productId
       );
       await cart.save();
       res.json(cart);
@@ -75,4 +93,43 @@ const removeFromCart = async (
   }
 };
 
-export { addToCart, getCart, removeFromCart };
+const updateCartQuantity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { user } = req as AuthRequest;
+    const { productId, quantity } = req.body;
+
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      throw new NotFoundError("Product not found");
+    }
+
+    if (quantity > product.stock) {
+      res.status(400).json({ message: `Only ${product.stock} items in stock` });
+      return;
+    }
+
+    const cart = (await CartModel.findOne({ userId: user!._id })) as Cart;
+    if (!cart) {
+      throw new NotFoundError("Cart not found");
+    }
+
+    const itemIndex = cart.items.findIndex(
+      (item: CartItem) => item.productId.toString() === productId
+    );
+    if (itemIndex > -1) {
+      cart.items[itemIndex].quantity = quantity;
+      await cart.save();
+      res.json(cart);
+    } else {
+      throw new NotFoundError("Product not found in cart");
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+export { addToCart, getCart, removeFromCart, updateCartQuantity };

@@ -1,11 +1,11 @@
 import { Document } from "mongoose";
 
-export interface ICartItem {
+export interface CartItem {
   productId: string;
   quantity: number;
 }
 
-export interface ICart extends Document {
+export interface Cart extends Document {
   userId: string;
-  items: ICartItem[];
+  items: CartItem[];
 }

@@ -9,6 +9,10 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req as AuthRequest;
     const { receiverId, productId, content } = req.body;
 
+    if (!receiverId || !content) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
     const receiver = await UserModel.findById(receiverId);
     if (!receiver) {
       throw new NotFoundError("Receiver not found");
@@ -17,7 +21,7 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
     const message = new MessageModel({
       sender: user?._id,
       receiver: receiverId,
-      productId,
+      productId: productId || undefined, // Make it optional so that sellers and users can keep messaging after the initial contact :)
       content,
       read: false,
     });
@@ -33,9 +37,10 @@ const getMessages = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user } = req as AuthRequest;
 
-    const messages = await MessageModel.find({ receiver: user?._id }).populate(
-      "sender productId"
-    );
+    const messages = await MessageModel.find({
+      $or: [{ sender: user?._id }, { receiver: user?._id }],
+    }).populate("sender receiver productId");
+
     res.json(messages);
   } catch (e) {
     next(e);
@@ -63,7 +68,6 @@ const markAsRead = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-//delete message
 const deleteMessage = async (
   req: Request,
   res: Response,

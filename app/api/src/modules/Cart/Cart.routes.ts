@@ -1,11 +1,17 @@
 import { Router } from "express";
 import { authJwt } from "../../middleware/auth/authMiddleware";
-import { getCart, addToCart, removeFromCart } from "./Cart.controller";
+import {
+  getCart,
+  addToCart,
+  removeFromCart,
+  updateCartQuantity,
+} from "./Cart.controller";
 
 const router = Router();
 
-router.get("/cart", authJwt, getCart);
-router.post("/cart", authJwt, addToCart);
-router.delete("/cart/:productId", authJwt, removeFromCart);
+router.get("/", authJwt, getCart);
+router.post("/", authJwt, addToCart);
+router.delete("/:productId", authJwt, removeFromCart);
+router.put("/update-quantity", authJwt, updateCartQuantity);
 
 export default router;

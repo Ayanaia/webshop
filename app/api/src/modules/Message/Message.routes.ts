@@ -9,9 +9,9 @@ import {
 
 const router = Router();
 
-router.post("/messages", authJwt, sendMessage);
-router.get("/messages", authJwt, getMessages);
-router.put("/messages/:id/read", authJwt, markAsRead);
-router.delete("/messages/:id", authJwt, deleteMessage);
+router.post("/", authJwt, sendMessage);
+router.get("/", authJwt, getMessages);
+router.put("/:id/read", authJwt, markAsRead);
+router.delete("/:id", authJwt, deleteMessage);
 
 export default router;

@@ -8,8 +8,8 @@ import {
 
 const router = Router();
 
-router.get("/favorites", authJwt, getFavorites);
-router.post("/favorites", authJwt, addFavorite);
-router.delete("/favorites/:id", authJwt, removeFavorite);
+router.get("/", authJwt, getFavorites);
+router.post("/", authJwt, addFavorite);
+router.delete("/:id", authJwt, removeFavorite);
 
 export default router;

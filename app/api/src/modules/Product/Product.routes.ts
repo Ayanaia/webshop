@@ -5,15 +5,19 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  getProductsBySeller,
 } from "./Product.controller";
-import { authJwt } from "../../middleware/auth/authMiddleware"; // Assuming you have this middleware for JWT authentication
+import { authJwt } from "../../middleware/auth/authMiddleware";
 
 const router = Router();
 
 router.get("/", getProducts);
 router.get("/:id", getProductDetail);
-router.post("/", authJwt, createProduct); // Protected route
-router.put("/:id", authJwt, updateProduct); // Protected route
-router.delete("/:id", authJwt, deleteProduct); // Protected route
+
+// Protected routes
+router.post("/", authJwt, createProduct);
+router.patch("/:id", authJwt, updateProduct);
+router.delete("/:id", authJwt, deleteProduct);
+router.get("/seller/current", authJwt, getProductsBySeller);
 
 export default router;

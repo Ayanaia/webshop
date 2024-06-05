@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import UserModel from "./User.model";
 import { AuthRequest } from "../../middleware/auth/authMiddleware";
 
-//show all users
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await UserModel.find().lean();
@@ -13,9 +12,19 @@ const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const login = (req: Request, res: Response, next: NextFunction) => {
-  const { user } = req as AuthRequest;
-  res.json({ token: user?.generateToken() });
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
+    const user = await UserModel.findOne({ email });
+
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    res.json({ token: user.generateToken() });
+  } catch (error) {
+    next(error);
+  }
 };
 
 const getCurrentUser = (req: Request, res: Response, next: NextFunction) => {
@@ -24,15 +33,14 @@ const getCurrentUser = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, phoneNumber, role } = req.body;
 
-  //checking if the email is used or not
   const existingUser = await UserModel.findOne({ email });
   if (existingUser) {
     return res.status(400).send("User already exists with this email");
   }
 
-  const user = new UserModel({ name, email, password, role });
+  const user = new UserModel({ name, email, password, phoneNumber, role });
 
   try {
     await user.save();
@@ -47,13 +55,14 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user } = req as AuthRequest;
-    const { name, email, password } = req.body;
+    const { name, email, password, phoneNumber } = req.body;
+    const { id } = req.params;
 
-    if (user?._id.toString() !== req.params.userId) {
+    if (user?._id.toString() !== id) {
       return res.status(403).send("Unauthorized to update this user");
     }
 
-    const userToUpdate = await UserModel.findById(req.params.userId);
+    const userToUpdate = await UserModel.findById(id);
     if (!userToUpdate) {
       return res.status(404).send("User not found");
     }
@@ -61,13 +70,16 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     // Update user information
     if (name) userToUpdate.name = name;
     if (email) userToUpdate.email = email;
+    if (phoneNumber) userToUpdate.phoneNumber = phoneNumber;
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       userToUpdate.password = hashedPassword;
     }
 
     await userToUpdate.save();
-    res.status(200).json({ message: "User updated successfully" });
+    res
+      .status(200)
+      .json({ message: "User updated successfully", user: userToUpdate });
   } catch (err) {
     next(err);
   }

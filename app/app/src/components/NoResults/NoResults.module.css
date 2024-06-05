@@ -1,0 +1,15 @@
+.wrapper {
+  width: 100%;
+  top: 0;
+  left: 0;
+  color: rgb(226, 226, 226);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+}
+
+.title {
+  max-width: 50rem;
+  font-size: 32px;
+}

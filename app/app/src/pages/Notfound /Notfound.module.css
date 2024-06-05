@@ -1,0 +1,14 @@
+
+.not_found_message {
+    text-align: center;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.not_found_message h1 {
+    font-size: 3em;
+    font-weight: bold;
+    color: #333;
+}

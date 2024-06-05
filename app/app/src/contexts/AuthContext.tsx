@@ -1,35 +1,72 @@
-import { createContext, useState, ReactNode } from 'react'
+import {
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+  createContext,
+} from 'react'
+import api from '../services/api'
 
-// Define the User type (adjust fields as necessary)
 interface User {
-  id: string
+  _id: string
   name: string
   email: string
+  phoneNumber: string
   role: string
 }
 
 interface AuthContextType {
   user: User | null
-  login: (userData: User) => void
+  setUser: (user: User | null) => void
+  login: (token: string) => Promise<void>
   logout: () => void
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
 
-  const login = (userData: User) => {
-    setUser(userData)
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      api
+        .get('/users/current')
+        .then((response) => {
+          setUser(response.data)
+        })
+        .catch(() => {
+          localStorage.removeItem('token')
+          delete api.defaults.headers.common['Authorization']
+        })
+    }
+  }, [])
+
+  const login = async (token: string) => {
+    localStorage.setItem('token', token)
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    const response = await api.get('/users/current')
+    setUser(response.data)
   }
 
   const logout = () => {
+    localStorage.removeItem('token')
+    delete api.defaults.headers.common['Authorization']
     setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
+}
+
+export const useAuth = () => {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
 }

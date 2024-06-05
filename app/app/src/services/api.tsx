@@ -6,10 +6,12 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
-    if (token && !config.url?.includes('/products')) { 
+    if (token && !config.url?.includes('/login') && !config.url?.includes('/register')) {
         config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('Request Config:', config); // Log the request config to debug
     return config;
 });
 
 export default api;
+

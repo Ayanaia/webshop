@@ -4,28 +4,14 @@ import bcrypt from "bcryptjs";
 import { User } from "./User.types";
 import jwt from "jsonwebtoken";
 
-export interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  role: { type: String; enum: ["user", "seller", "admin"]; default: "user" };
-}
 // schema
-const userSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema<User>(
   {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    name: { type: String, required: true },
+    phoneNumber: { type: String, required: false },
+    role: { type: String, enum: ["user", "seller", "admin"], default: "user" },
   },
   {
     timestamps: true,

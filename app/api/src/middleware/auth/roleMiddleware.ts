@@ -1,17 +1,17 @@
+// src/middleware/auth/roleMiddleware.ts
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "./authMiddleware";
 
 export const requireSellerRole = (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { user } = req;
-  if (user && user.role === "seller") {
-    next();
-  } else {
-    res
-      .status(403)
-      .json({ message: "Forbidden: Only sellers can perform this action" });
+  const { user } = req as AuthRequest;
+
+  if (user?.role !== "seller") {
+    return res.status(403).send("Only sellers can perform this action.");
   }
+
+  next();
 };

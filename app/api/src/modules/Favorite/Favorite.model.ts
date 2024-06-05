@@ -1,13 +1,9 @@
 import { Schema, model, Document } from "mongoose";
+import { Favorite } from "./Favorite.types";
 
-export interface IFavorite extends Document {
-  user: Schema.Types.ObjectId;
-  product: Schema.Types.ObjectId;
-}
-
-const FavoriteSchema = new Schema<IFavorite>({
+const FavoriteSchema = new Schema<Favorite>({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
 });
 
-export default model<IFavorite>("Favorite", FavoriteSchema);
+export default model<Favorite>("Favorite", FavoriteSchema);

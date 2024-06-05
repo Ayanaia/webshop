@@ -1,0 +1,142 @@
+.products {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.productItem {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  text-align: center;
+  padding: 10px;
+}
+
+.price {
+  color: #b56576;
+}
+
+.filterContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.productItem:hover {
+  transform: scale(1.05);
+}
+
+.productItem h3 {
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #333;
+  font-weight: 200;
+}
+
+.productItem a {
+  text-decoration: none;
+}
+
+.productItem p {
+  font-size: 16px;
+  color: #888;
+  margin: 0 0 5px 0;
+}
+
+.productItem .price {
+  font-size: 16px;
+  font-weight: bold;
+  color: rgb(118, 50, 50);
+  margin-bottom: 5px;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.productItem {
+  list-style: none;
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.productImage {
+  width: 100%;
+  height: auto;
+}
+
+.filterContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sortDropdown {
+  padding: 5px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pageLink {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.pageLink:hover {
+  background-color: black;
+  color: white;
+}
+
+.btnAddNew {
+  background-color: #b56576;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.btnAddNew:hover {
+  background-color: #a04d5e;
+}
+
+.productActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btnEdit,
+.btnDelete {
+  background-color: #b56576;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btnEdit:hover,
+.btnDelete:hover {
+  background-color: #a04d5e;
+}

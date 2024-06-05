@@ -1,8 +1,6 @@
-import { Document, ObjectId } from "mongoose";
+import { Document, ObjectId, Schema } from "mongoose";
 
-export interface IFavorite extends Document {
-  userId: ObjectId;
-  productId: ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+export interface Favorite extends Document {
+  user: ObjectId;
+  product: ObjectId;
 }

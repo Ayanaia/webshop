@@ -14,6 +14,15 @@ const addFavorite = async (req: Request, res: Response, next: NextFunction) => {
       throw new NotFoundError("Product not found");
     }
 
+    const existingFavorite = await FavoriteModel.findOne({
+      user: user?._id,
+      product: productId,
+    });
+
+    if (existingFavorite) {
+      return res.status(400).json({ message: "Product already in favorites" });
+    }
+
     const favorite = new FavoriteModel({ user: user?._id, product: productId });
     const savedFavorite = await favorite.save();
     res
